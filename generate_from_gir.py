@@ -362,6 +362,11 @@ class GIRParser:
             c_name = f"Flatpak{name}"
 
         parent = class_elem.get("parent")
+        # Normalize parent class name by stripping namespace prefix
+        if parent:
+            # Extract simple class name after last dot
+            if "." in parent:
+                parent = parent.split(".")[-1]
 
         cls = Class(name=name, c_name=c_name, parent=parent)
 
@@ -866,6 +871,13 @@ class CppGenerator:
         self.output.append(
             f"  {cls.c_name}* self = info[0].As<Napi::External<{cls.c_name}>>().Data();"
         )
+        self.output.append("")
+        self.output.append("  if (!self) {")
+        self.output.append(
+            f'    Napi::Error::New(env, "Invalid {cls.name} instance (null pointer)").ThrowAsJavaScriptException();'
+        )
+        self.output.append("    return env.Null();")
+        self.output.append("  }")
         self.output.append("")
 
         # Generate parameter extraction code (skip first param for instance)
@@ -1392,6 +1404,10 @@ class CppGenerator:
             self.output.append(f"    GPtrArray* array = {var_name};")
             self.output.append(f"    for (guint i = 0; i < array->len; i++) {{")
             self.output.append(f"      gpointer item = g_ptr_array_index(array, i);")
+            self.output.append(f"      if (!item) {{")
+            self.output.append(f"        js_array.Set(i, env.Null());")
+            self.output.append(f"        continue;")
+            self.output.append(f"      }}")
             # Determine element type and wrap appropriately
             if return_value.element_type:
                 element_type = return_value.element_type
@@ -1402,39 +1418,43 @@ class CppGenerator:
                     "Remote",
                     "Ref",
                     "RelatedRef",
+                    "TransactionOperation",
+                    "Instance",
+                    "Installation",
                 ]:
                     # These are Flatpak objects
                     c_type = f"Flatpak{element_type}*"
                     self.output.append(
                         f"      {c_type} typed_item = static_cast<{c_type}>(item);"
                     )
+                    self.output.append(f"      if (!typed_item) {{")
+                    self.output.append(f"        js_array.Set(i, env.Null());")
+                    self.output.append(f"        continue;")
+                    self.output.append(f"      }}")
                     self.output.append(
-                        f"      js_array.Set(i, Napi::External<Flatpak{element_type}>::New(env, typed_item));"
+                        f"      // Increment reference count for GObject"
                     )
-                elif element_type == "TransactionOperation":
-                    c_type = "FlatpakTransactionOperation*"
+                    self.output.append(f"      if (G_IS_OBJECT(typed_item)) {{")
+                    self.output.append(f"        g_object_ref(typed_item);")
+                    self.output.append(f"        // Create external with finalizer")
                     self.output.append(
-                        f"      {c_type} typed_item = static_cast<{c_type}>(item);"
-                    )
-                    self.output.append(
-                        f"      js_array.Set(i, Napi::External<FlatpakTransactionOperation>::New(env, typed_item));"
-                    )
-                elif element_type == "Instance":
-                    c_type = "FlatpakInstance*"
-                    self.output.append(
-                        f"      {c_type} typed_item = static_cast<{c_type}>(item);"
+                        f"        js_array.Set(i, Napi::External<Flatpak{element_type}>::New(env, typed_item,"
                     )
                     self.output.append(
-                        f"      js_array.Set(i, Napi::External<FlatpakInstance>::New(env, typed_item));"
+                        f"          [](Napi::Env env, Flatpak{element_type}* obj) {{"
                     )
-                elif element_type == "Installation":
-                    c_type = "FlatpakInstallation*"
+                    self.output.append(f"            if (obj && G_IS_OBJECT(obj)) {{")
+                    self.output.append(f"              g_object_unref(obj);")
+                    self.output.append(f"            }}")
+                    self.output.append(f"          }}));")
+                    self.output.append(f"      }} else {{")
                     self.output.append(
-                        f"      {c_type} typed_item = static_cast<{c_type}>(item);"
+                        f"        // Not a GObject, just pass as external"
                     )
                     self.output.append(
-                        f"      js_array.Set(i, Napi::External<FlatpakInstallation>::New(env, typed_item));"
+                        f"        js_array.Set(i, Napi::External<Flatpak{element_type}>::New(env, typed_item));"
                     )
+                    self.output.append(f"      }}")
                 elif element_type in [
                     "File",
                     "Cancellable",
@@ -1450,24 +1470,92 @@ class CppGenerator:
                     self.output.append(
                         f"      {c_type} typed_item = static_cast<{c_type}>(item);"
                     )
+                    self.output.append(f"      if (!typed_item) {{")
+                    self.output.append(f"        js_array.Set(i, env.Null());")
+                    self.output.append(f"        continue;")
+                    self.output.append(f"      }}")
                     self.output.append(
-                        f"      js_array.Set(i, Napi::External<G{element_type}>::New(env, typed_item));"
+                        f"      // Increment reference count for GObject"
                     )
+                    self.output.append(f"      if (G_IS_OBJECT(typed_item)) {{")
+                    self.output.append(f"        g_object_ref(typed_item);")
+                    self.output.append(f"        // Create external with finalizer")
+                    self.output.append(
+                        f"        js_array.Set(i, Napi::External<G{element_type}>::New(env, typed_item,"
+                    )
+                    self.output.append(
+                        f"          [](Napi::Env env, G{element_type}* obj) {{"
+                    )
+                    self.output.append(f"            if (obj && G_IS_OBJECT(obj)) {{")
+                    self.output.append(f"              g_object_unref(obj);")
+                    self.output.append(f"            }}")
+                    self.output.append(f"          }}));")
+                    self.output.append(f"      }} else {{")
+                    self.output.append(
+                        f"        // Not a GObject, just pass as external"
+                    )
+                    self.output.append(
+                        f"        js_array.Set(i, Napi::External<G{element_type}>::New(env, typed_item));"
+                    )
+                    self.output.append(f"      }}")
                 else:
                     # Unknown type, fallback to void*
                     self.output.append(f"      // Unknown element type: {element_type}")
+                    self.output.append(f"      // Try to treat as GObject if possible")
                     self.output.append(
-                        f"      js_array.Set(i, Napi::External<void>::New(env, item));"
+                        f"      GObject* gobj = static_cast<GObject*>(item);"
                     )
+                    self.output.append(f"      if (gobj && G_IS_OBJECT(gobj)) {{")
+                    self.output.append(f"        g_object_ref(gobj);")
+                    self.output.append(f"        // Create external with finalizer")
+                    self.output.append(
+                        f"        js_array.Set(i, Napi::External<void>::New(env, gobj,"
+                    )
+                    self.output.append(f"          [](Napi::Env env, void* obj) {{")
+                    self.output.append(f"            if (obj && G_IS_OBJECT(obj)) {{")
+                    self.output.append(
+                        f"              g_object_unref(static_cast<GObject*>(obj));"
+                    )
+                    self.output.append(f"            }}")
+                    self.output.append(f"          }}));")
+                    self.output.append(f"      }} else {{")
+                    self.output.append(
+                        f"        // Not a GObject, just pass as external"
+                    )
+                    self.output.append(
+                        f"        js_array.Set(i, Napi::External<void>::New(env, item));"
+                    )
+                    self.output.append(f"      }}")
             else:
-                # No element type info, use generic void*
+                # No element type info, try to treat as GObject if possible
+                self.output.append(f"      // Try to treat as GObject")
                 self.output.append(
-                    f"      js_array.Set(i, Napi::External<void>::New(env, item));"
+                    f"      GObject* gobj = static_cast<GObject*>(item);"
                 )
+                self.output.append(f"      if (gobj && G_IS_OBJECT(gobj)) {{")
+                self.output.append(f"        g_object_ref(gobj);")
+                self.output.append(f"        // Create external with finalizer")
+                self.output.append(
+                    f"        js_array.Set(i, Napi::External<void>::New(env, gobj,"
+                )
+                self.output.append(f"          [](Napi::Env env, void* obj) {{")
+                self.output.append(f"            if (obj && G_IS_OBJECT(obj)) {{")
+                self.output.append(
+                    f"              g_object_unref(static_cast<GObject*>(obj));"
+                )
+                self.output.append(f"            }}")
+                self.output.append(f"          }}));")
+                self.output.append(f"      }} else {{")
+                self.output.append(f"        // Not a GObject, just pass as external")
+                self.output.append(
+                    f"        js_array.Set(i, Napi::External<void>::New(env, item));"
+                )
+                self.output.append(f"      }}")
             self.output.append(f"    }}")
-            self.output.append(f"  }}")
+            self.output.append(f"    // Unref the array but not the contained objects")
             if return_value.transfer in ["full", "container"]:
-                self.output.append(f"  g_ptr_array_unref({var_name});")
+                self.output.append(f"    g_ptr_array_unref({var_name});")
+            self.output.append(f"  }}")
             self.output.append(f"  return js_array;")
 
         elif return_value.is_gobject():
@@ -1502,16 +1590,54 @@ class CppGenerator:
                             base_type = "G" + base_type
                         else:
                             base_type = "Flatpak" + base_type
+                    self.output.append(f"  if (!{var_name}) {{")
+                    self.output.append(f"    return env.Null();")
+                    self.output.append(f"  }}")
+                    self.output.append(f"  // Increment reference count for GObject")
+                    self.output.append(f"  if (G_IS_OBJECT({var_name})) {{")
+                    self.output.append(f"    g_object_ref({var_name});")
+                    self.output.append(f"    // Create external with finalizer")
                     self.output.append(
-                        f"  return Napi::External<{base_type}>::New(env, {var_name});"
+                        f"    return Napi::External<{base_type}>::New(env, {var_name},"
                     )
+                    self.output.append(f"      [](Napi::Env env, {base_type}* obj) {{")
+                    self.output.append(f"        if (obj && G_IS_OBJECT(obj)) {{")
+                    self.output.append(f"          g_object_unref(obj);")
+                    self.output.append(f"        }}")
+                    self.output.append(f"      }});")
+                    self.output.append(f"  }} else {{")
+                    self.output.append(f"    // Not a GObject, just pass as external")
+                    self.output.append(
+                        f"    return Napi::External<{base_type}>::New(env, {var_name});"
+                    )
+                    self.output.append(f"  }}")
             else:
                 self.output.append(
                     f"  // Return GObject of type {return_value.gir_type}"
                 )
+                self.output.append(f"  if (!{var_name}) {{")
+                self.output.append(f"    return env.Null();")
+                self.output.append(f"  }}")
+                self.output.append(f"  // Increment reference count for GObject")
+                self.output.append(f"  if (G_IS_OBJECT({var_name})) {{")
+                self.output.append(f"    g_object_ref({var_name});")
+                self.output.append(f"    // Create external with finalizer")
                 self.output.append(
-                    f"  return Napi::External<void>::New(env, {var_name});"
+                    f"    return Napi::External<void>::New(env, {var_name},"
                 )
+                self.output.append(f"      [](Napi::Env env, void* obj) {{")
+                self.output.append(f"        if (obj && G_IS_OBJECT(obj)) {{")
+                self.output.append(
+                    f"          g_object_unref(static_cast<GObject*>(obj));"
+                )
+                self.output.append(f"        }}")
+                self.output.append(f"      }});")
+                self.output.append(f"  }} else {{")
+                self.output.append(f"    // Not a GObject, just pass as external")
+                self.output.append(
+                    f"    return Napi::External<void>::New(env, {var_name});"
+                )
+                self.output.append(f"  }}")
 
         elif return_value.is_enum():
             # Enum return type
@@ -1752,14 +1878,40 @@ class JavaScriptGenerator:
 
         return properties
 
+    def _find_method_owner(
+        self, cls: Class, method_name: str, is_static: bool = False
+    ) -> str:
+        """Find which class in the hierarchy owns a method"""
+        # Traverse hierarchy from child to parent
+        current = cls
+        while current:
+            # Check if method exists in current class
+            for func in current.functions:
+                if not func.is_constructor:
+                    if func.is_static == is_static:
+                        if func.js_name() == method_name:
+                            return current.name
+
+            # Move to parent if exists in our generated classes
+            if current.parent and current.parent in self.class_map:
+                current = self.class_map[current.parent]
+            else:
+                break
+
+        # If not found, return the original class name
+        return cls.name
+
     def generate_method(self, cls: Class, func: Function):
         """Generate instance method"""
         js_name = func.js_name()
         params = ", ".join([p.name for p in func.parameters if not p.is_instance])
 
+        # Find which class actually owns this method
+        owner_class = self._find_method_owner(cls, js_name, is_static=False)
+
         self.output.append(f"  {js_name}({params}) {{")
         self.output.append(
-            f"    const result = addon.{cls.name}.{js_name}(this._handle{', ' + params if params else ''});"
+            f"    const result = addon.{owner_class}.{js_name}(this._handle{', ' + params if params else ''});"
         )
         self._generate_array_wrapping(func.return_value, "result")
         self.output.append(f"    return result;")
@@ -1771,11 +1923,16 @@ class JavaScriptGenerator:
         js_name = func.js_name()
         params = ", ".join([p.name for p in func.parameters])
 
+        # Find which class actually owns this static method
+        owner_class = self._find_method_owner(cls, js_name, is_static=True)
+
         self.output.append(f"  static {js_name}({params}) {{")
-        self.output.append(f"    const result = addon.{cls.name}.{js_name}({params});")
+        self.output.append(
+            f"    const result = addon.{owner_class}.{js_name}({params});"
+        )
         self._generate_array_wrapping(func.return_value, "result")
         self.output.append(f"    return result;")
-        self.output.append("  }")
+        self.output.append(f"  }}")
         self.output.append("")
 
     def generate_property_getter(self, prop: Property):

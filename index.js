@@ -43,12 +43,100 @@ class BundleRef {
     return result;
   }
 
+  formatRef() {
+    const result = addon.Ref.formatRef(this._handle);
+    return result;
+  }
+
+  formatRefCached() {
+    const result = addon.Ref.formatRefCached(this._handle);
+    return result;
+  }
+
+  getArch() {
+    const result = addon.Ref.getArch(this._handle);
+    return result;
+  }
+
+  getBranch() {
+    const result = addon.Ref.getBranch(this._handle);
+    return result;
+  }
+
+  getCollectionId() {
+    const result = addon.Ref.getCollectionId(this._handle);
+    return result;
+  }
+
+  getCommit() {
+    const result = addon.Ref.getCommit(this._handle);
+    return result;
+  }
+
+  getKind() {
+    const result = addon.Ref.getKind(this._handle);
+    return result;
+  }
+
+  getName() {
+    const result = addon.Ref.getName(this._handle);
+    return result;
+  }
+
   get file() {
     return this.get_file();
   }
 
   set file(value) {
     this.set_file(value);
+  }
+
+  get arch() {
+    return this.get_arch();
+  }
+
+  set arch(value) {
+    this.set_arch(value);
+  }
+
+  get branch() {
+    return this.get_branch();
+  }
+
+  set branch(value) {
+    this.set_branch(value);
+  }
+
+  get collectionId() {
+    return this.get_collection_id();
+  }
+
+  set collectionId(value) {
+    this.set_collection_id(value);
+  }
+
+  get commit() {
+    return this.get_commit();
+  }
+
+  set commit(value) {
+    this.set_commit(value);
+  }
+
+  get kind() {
+    return this.get_kind();
+  }
+
+  set kind(value) {
+    this.set_kind(value);
+  }
+
+  get name() {
+    return this.get_name();
+  }
+
+  set name(value) {
+    this.set_name(value);
   }
 
 
@@ -520,6 +608,46 @@ class InstalledRef {
     return result;
   }
 
+  formatRef() {
+    const result = addon.Ref.formatRef(this._handle);
+    return result;
+  }
+
+  formatRefCached() {
+    const result = addon.Ref.formatRefCached(this._handle);
+    return result;
+  }
+
+  getArch() {
+    const result = addon.Ref.getArch(this._handle);
+    return result;
+  }
+
+  getBranch() {
+    const result = addon.Ref.getBranch(this._handle);
+    return result;
+  }
+
+  getCollectionId() {
+    const result = addon.Ref.getCollectionId(this._handle);
+    return result;
+  }
+
+  getCommit() {
+    const result = addon.Ref.getCommit(this._handle);
+    return result;
+  }
+
+  getKind() {
+    const result = addon.Ref.getKind(this._handle);
+    return result;
+  }
+
+  getName() {
+    const result = addon.Ref.getName(this._handle);
+    return result;
+  }
+
   get appdataContentRating() {
     return this.get_appdata_content_rating();
   }
@@ -622,6 +750,54 @@ class InstalledRef {
 
   set origin(value) {
     this.set_origin(value);
+  }
+
+  get arch() {
+    return this.get_arch();
+  }
+
+  set arch(value) {
+    this.set_arch(value);
+  }
+
+  get branch() {
+    return this.get_branch();
+  }
+
+  set branch(value) {
+    this.set_branch(value);
+  }
+
+  get collectionId() {
+    return this.get_collection_id();
+  }
+
+  set collectionId(value) {
+    this.set_collection_id(value);
+  }
+
+  get commit() {
+    return this.get_commit();
+  }
+
+  set commit(value) {
+    this.set_commit(value);
+  }
+
+  get kind() {
+    return this.get_kind();
+  }
+
+  set kind(value) {
+    this.set_kind(value);
+  }
+
+  get name() {
+    return this.get_name();
+  }
+
+  set name(value) {
+    this.set_name(value);
   }
 
 
@@ -823,6 +999,46 @@ class RelatedRef {
     return result;
   }
 
+  formatRef() {
+    const result = addon.Ref.formatRef(this._handle);
+    return result;
+  }
+
+  formatRefCached() {
+    const result = addon.Ref.formatRefCached(this._handle);
+    return result;
+  }
+
+  getArch() {
+    const result = addon.Ref.getArch(this._handle);
+    return result;
+  }
+
+  getBranch() {
+    const result = addon.Ref.getBranch(this._handle);
+    return result;
+  }
+
+  getCollectionId() {
+    const result = addon.Ref.getCollectionId(this._handle);
+    return result;
+  }
+
+  getCommit() {
+    const result = addon.Ref.getCommit(this._handle);
+    return result;
+  }
+
+  getKind() {
+    const result = addon.Ref.getKind(this._handle);
+    return result;
+  }
+
+  getName() {
+    const result = addon.Ref.getName(this._handle);
+    return result;
+  }
+
   get shouldAutoprune() {
     return this.get_should_autoprune();
   }
@@ -845,6 +1061,54 @@ class RelatedRef {
 
   set shouldDownload(value) {
     this.set_should_download(value);
+  }
+
+  get arch() {
+    return this.get_arch();
+  }
+
+  set arch(value) {
+    this.set_arch(value);
+  }
+
+  get branch() {
+    return this.get_branch();
+  }
+
+  set branch(value) {
+    this.set_branch(value);
+  }
+
+  get collectionId() {
+    return this.get_collection_id();
+  }
+
+  set collectionId(value) {
+    this.set_collection_id(value);
+  }
+
+  get commit() {
+    return this.get_commit();
+  }
+
+  set commit(value) {
+    this.set_commit(value);
+  }
+
+  get kind() {
+    return this.get_kind();
+  }
+
+  set kind(value) {
+    this.set_kind(value);
+  }
+
+  get name() {
+    return this.get_name();
+  }
+
+  set name(value) {
+    this.set_name(value);
   }
 
 
@@ -1097,6 +1361,46 @@ class RemoteRef {
     return result;
   }
 
+  formatRef() {
+    const result = addon.Ref.formatRef(this._handle);
+    return result;
+  }
+
+  formatRefCached() {
+    const result = addon.Ref.formatRefCached(this._handle);
+    return result;
+  }
+
+  getArch() {
+    const result = addon.Ref.getArch(this._handle);
+    return result;
+  }
+
+  getBranch() {
+    const result = addon.Ref.getBranch(this._handle);
+    return result;
+  }
+
+  getCollectionId() {
+    const result = addon.Ref.getCollectionId(this._handle);
+    return result;
+  }
+
+  getCommit() {
+    const result = addon.Ref.getCommit(this._handle);
+    return result;
+  }
+
+  getKind() {
+    const result = addon.Ref.getKind(this._handle);
+    return result;
+  }
+
+  getName() {
+    const result = addon.Ref.getName(this._handle);
+    return result;
+  }
+
   get downloadSize() {
     return this.get_download_size();
   }
@@ -1143,6 +1447,54 @@ class RemoteRef {
 
   set remoteName(value) {
     this.set_remote_name(value);
+  }
+
+  get arch() {
+    return this.get_arch();
+  }
+
+  set arch(value) {
+    this.set_arch(value);
+  }
+
+  get branch() {
+    return this.get_branch();
+  }
+
+  set branch(value) {
+    this.set_branch(value);
+  }
+
+  get collectionId() {
+    return this.get_collection_id();
+  }
+
+  set collectionId(value) {
+    this.set_collection_id(value);
+  }
+
+  get commit() {
+    return this.get_commit();
+  }
+
+  set commit(value) {
+    this.set_commit(value);
+  }
+
+  get kind() {
+    return this.get_kind();
+  }
+
+  set kind(value) {
+    this.set_kind(value);
+  }
+
+  get name() {
+    return this.get_name();
+  }
+
+  set name(value) {
+    this.set_name(value);
   }
 
 

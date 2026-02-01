@@ -233,7 +233,23 @@ Napi::Value Wrap_BundleRef_new(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type BundleRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_BundleRef_get_appstream(const Napi::CallbackInfo& info) {
@@ -245,10 +261,31 @@ Napi::Value Wrap_BundleRef_get_appstream(const Napi::CallbackInfo& info) {
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GBytes* result = flatpak_bundle_ref_get_appstream(self);
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_BundleRef_get_file(const Napi::CallbackInfo& info) {
@@ -260,10 +297,31 @@ Napi::Value Wrap_BundleRef_get_file(const Napi::CallbackInfo& info) {
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GFile* result = flatpak_bundle_ref_get_file(self);
 
   // Return GObject of type Gio.File
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_BundleRef_get_icon(const Napi::CallbackInfo& info) {
@@ -275,6 +333,11 @@ Napi::Value Wrap_BundleRef_get_icon(const Napi::CallbackInfo& info) {
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for parameter 'size'").ThrowAsJavaScriptException();
     return env.Null();
@@ -284,7 +347,23 @@ Napi::Value Wrap_BundleRef_get_icon(const Napi::CallbackInfo& info) {
   GBytes* result = flatpak_bundle_ref_get_icon(self, size);
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_BundleRef_get_installed_size(const Napi::CallbackInfo& info) {
@@ -295,6 +374,11 @@ Napi::Value Wrap_BundleRef_get_installed_size(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   guint64 result = flatpak_bundle_ref_get_installed_size(self);
 
@@ -310,10 +394,31 @@ Napi::Value Wrap_BundleRef_get_metadata(const Napi::CallbackInfo& info) {
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GBytes* result = flatpak_bundle_ref_get_metadata(self);
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_BundleRef_get_origin(const Napi::CallbackInfo& info) {
@@ -324,6 +429,11 @@ Napi::Value Wrap_BundleRef_get_origin(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_bundle_ref_get_origin(self);
 
@@ -340,6 +450,11 @@ Napi::Value Wrap_BundleRef_get_runtime_repo_url(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakBundleRef* self = info[0].As<Napi::External<FlatpakBundleRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid BundleRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_bundle_ref_get_runtime_repo_url(self);
 
@@ -382,7 +497,23 @@ Napi::Value Wrap_Installation_new_for_path(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Installation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_new_system(const Napi::CallbackInfo& info) {
@@ -407,7 +538,23 @@ Napi::Value Wrap_Installation_new_system(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Installation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_new_system_with_id(const Napi::CallbackInfo& info) {
@@ -442,7 +589,23 @@ Napi::Value Wrap_Installation_new_system_with_id(const Napi::CallbackInfo& info)
   }
 
   // Return GObject of type Installation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_new_user(const Napi::CallbackInfo& info) {
@@ -467,7 +630,23 @@ Napi::Value Wrap_Installation_new_user(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Installation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_add_remote(const Napi::CallbackInfo& info) {
@@ -478,6 +657,11 @@ Napi::Value Wrap_Installation_add_remote(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'remote'").ThrowAsJavaScriptException();
@@ -521,6 +705,11 @@ Napi::Value Wrap_Installation_cleanup_local_refs_sync(const Napi::CallbackInfo& 
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -551,6 +740,11 @@ Napi::Value Wrap_Installation_create_monitor(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -570,7 +764,23 @@ Napi::Value Wrap_Installation_create_monitor(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Gio.FileMonitor
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_drop_caches(const Napi::CallbackInfo& info) {
@@ -581,6 +791,11 @@ Napi::Value Wrap_Installation_drop_caches(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -611,6 +826,11 @@ Napi::Value Wrap_Installation_fetch_remote_metadata_sync(const Napi::CallbackInf
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -644,7 +864,23 @@ Napi::Value Wrap_Installation_fetch_remote_metadata_sync(const Napi::CallbackInf
   }
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_fetch_remote_ref_sync(const Napi::CallbackInfo& info) {
@@ -655,6 +891,11 @@ Napi::Value Wrap_Installation_fetch_remote_ref_sync(const Napi::CallbackInfo& in
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -715,7 +956,23 @@ Napi::Value Wrap_Installation_fetch_remote_ref_sync(const Napi::CallbackInfo& in
   }
 
   // Return GObject of type RemoteRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_fetch_remote_ref_sync_full(const Napi::CallbackInfo& info) {
@@ -726,6 +983,11 @@ Napi::Value Wrap_Installation_fetch_remote_ref_sync_full(const Napi::CallbackInf
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -792,7 +1054,23 @@ Napi::Value Wrap_Installation_fetch_remote_ref_sync_full(const Napi::CallbackInf
   }
 
   // Return GObject of type RemoteRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_fetch_remote_size_sync(const Napi::CallbackInfo& info) {
@@ -803,6 +1081,11 @@ Napi::Value Wrap_Installation_fetch_remote_size_sync(const Napi::CallbackInfo& i
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -851,6 +1134,11 @@ Napi::Value Wrap_Installation_get_config(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'key'").ThrowAsJavaScriptException();
     return env.Null();
@@ -890,6 +1178,11 @@ Napi::Value Wrap_Installation_get_current_installed_app(const Napi::CallbackInfo
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'name'").ThrowAsJavaScriptException();
     return env.Null();
@@ -916,7 +1209,23 @@ Napi::Value Wrap_Installation_get_current_installed_app(const Napi::CallbackInfo
   }
 
   // Return GObject of type InstalledRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_get_default_languages(const Napi::CallbackInfo& info) {
@@ -927,6 +1236,11 @@ Napi::Value Wrap_Installation_get_default_languages(const Napi::CallbackInfo& in
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GError* error = NULL;
   char** result = flatpak_installation_get_default_languages(self, &error);
@@ -959,6 +1273,11 @@ Napi::Value Wrap_Installation_get_default_locales(const Napi::CallbackInfo& info
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GError* error = NULL;
   char** result = flatpak_installation_get_default_locales(self, &error);
 
@@ -990,6 +1309,11 @@ Napi::Value Wrap_Installation_get_display_name(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installation_get_display_name(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -1004,6 +1328,11 @@ Napi::Value Wrap_Installation_get_id(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installation_get_id(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -1017,6 +1346,11 @@ Napi::Value Wrap_Installation_get_installed_ref(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for enum parameter 'kind'").ThrowAsJavaScriptException();
@@ -1070,7 +1404,23 @@ Napi::Value Wrap_Installation_get_installed_ref(const Napi::CallbackInfo& info) 
   }
 
   // Return GObject of type InstalledRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_get_is_user(const Napi::CallbackInfo& info) {
@@ -1081,6 +1431,11 @@ Napi::Value Wrap_Installation_get_is_user(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_installation_get_is_user(self);
 
@@ -1095,6 +1450,11 @@ Napi::Value Wrap_Installation_get_min_free_space_bytes(const Napi::CallbackInfo&
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   guint64 out_bytes_local;
   guint64* out_bytes = &out_bytes_local;
@@ -1119,6 +1479,11 @@ Napi::Value Wrap_Installation_get_no_interaction(const Napi::CallbackInfo& info)
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_installation_get_no_interaction(self);
 
   return Napi::Boolean::New(env, result);
@@ -1133,10 +1498,31 @@ Napi::Value Wrap_Installation_get_path(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GFile* result = flatpak_installation_get_path(self);
 
   // Return GObject of type Gio.File
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_get_priority(const Napi::CallbackInfo& info) {
@@ -1147,6 +1533,11 @@ Napi::Value Wrap_Installation_get_priority(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gint result = flatpak_installation_get_priority(self);
 
@@ -1161,6 +1552,11 @@ Napi::Value Wrap_Installation_get_remote_by_name(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'name'").ThrowAsJavaScriptException();
@@ -1188,7 +1584,23 @@ Napi::Value Wrap_Installation_get_remote_by_name(const Napi::CallbackInfo& info)
   }
 
   // Return GObject of type Remote
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_get_storage_type(const Napi::CallbackInfo& info) {
@@ -1199,6 +1611,11 @@ Napi::Value Wrap_Installation_get_storage_type(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   FlatpakStorageType result = flatpak_installation_get_storage_type(self);
 
@@ -1213,6 +1630,11 @@ Napi::Value Wrap_Installation_install_ref_file(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'ref_file_data'").ThrowAsJavaScriptException();
@@ -1239,7 +1661,23 @@ Napi::Value Wrap_Installation_install_ref_file(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type RemoteRef
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Installation_launch(const Napi::CallbackInfo& info) {
@@ -1250,6 +1688,11 @@ Napi::Value Wrap_Installation_launch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'name'").ThrowAsJavaScriptException();
@@ -1317,6 +1760,11 @@ Napi::Value Wrap_Installation_launch_full(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for enum parameter 'flags'").ThrowAsJavaScriptException();
@@ -1393,6 +1841,11 @@ Napi::Value Wrap_Installation_list_installed_refs(const Napi::CallbackInfo& info
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -1417,11 +1870,33 @@ Napi::Value Wrap_Installation_list_installed_refs(const Napi::CallbackInfo& info
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1433,6 +1908,11 @@ Napi::Value Wrap_Installation_list_installed_refs_by_kind(const Napi::CallbackIn
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for enum parameter 'kind'").ThrowAsJavaScriptException();
@@ -1464,11 +1944,33 @@ Napi::Value Wrap_Installation_list_installed_refs_by_kind(const Napi::CallbackIn
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1480,6 +1982,11 @@ Napi::Value Wrap_Installation_list_installed_refs_for_update(const Napi::Callbac
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -1505,11 +2012,33 @@ Napi::Value Wrap_Installation_list_installed_refs_for_update(const Napi::Callbac
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1521,6 +2050,11 @@ Napi::Value Wrap_Installation_list_installed_related_refs_sync(const Napi::Callb
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -1560,11 +2094,33 @@ Napi::Value Wrap_Installation_list_installed_related_refs_sync(const Napi::Callb
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRelatedRef* typed_item = static_cast<FlatpakRelatedRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRelatedRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1576,6 +2132,11 @@ Napi::Value Wrap_Installation_list_pinned_refs(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* arch = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -1611,11 +2172,33 @@ Napi::Value Wrap_Installation_list_pinned_refs(const Napi::CallbackInfo& info) {
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1627,6 +2210,11 @@ Napi::Value Wrap_Installation_list_remote_refs_sync(const Napi::CallbackInfo& in
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_or_uri'").ThrowAsJavaScriptException();
@@ -1659,11 +2247,33 @@ Napi::Value Wrap_Installation_list_remote_refs_sync(const Napi::CallbackInfo& in
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRemoteRef* typed_item = static_cast<FlatpakRemoteRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRemoteRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1675,6 +2285,11 @@ Napi::Value Wrap_Installation_list_remote_refs_sync_full(const Napi::CallbackInf
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_or_uri'").ThrowAsJavaScriptException();
@@ -1713,11 +2328,33 @@ Napi::Value Wrap_Installation_list_remote_refs_sync_full(const Napi::CallbackInf
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRemoteRef* typed_item = static_cast<FlatpakRemoteRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRemoteRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRemoteRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1729,6 +2366,11 @@ Napi::Value Wrap_Installation_list_remote_related_refs_for_installed_sync(const 
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -1768,11 +2410,33 @@ Napi::Value Wrap_Installation_list_remote_related_refs_for_installed_sync(const 
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRelatedRef* typed_item = static_cast<FlatpakRelatedRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRelatedRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1784,6 +2448,11 @@ Napi::Value Wrap_Installation_list_remote_related_refs_sync(const Napi::Callback
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -1823,11 +2492,33 @@ Napi::Value Wrap_Installation_list_remote_related_refs_sync(const Napi::Callback
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRelatedRef* typed_item = static_cast<FlatpakRelatedRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRelatedRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRelatedRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1839,6 +2530,11 @@ Napi::Value Wrap_Installation_list_remotes(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -1864,11 +2560,33 @@ Napi::Value Wrap_Installation_list_remotes(const Napi::CallbackInfo& info) {
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakRemote* typed_item = static_cast<FlatpakRemote*>(item);
-      js_array.Set(i, Napi::External<FlatpakRemote>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakRemote>::New(env, typed_item,
+          [](Napi::Env env, FlatpakRemote* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakRemote>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1880,6 +2598,11 @@ Napi::Value Wrap_Installation_list_unused_refs(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* arch = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -1915,11 +2638,33 @@ Napi::Value Wrap_Installation_list_unused_refs(const Napi::CallbackInfo& info) {
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -1931,6 +2676,11 @@ Napi::Value Wrap_Installation_list_unused_refs_with_options(const Napi::Callback
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* arch = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -1984,11 +2734,33 @@ Napi::Value Wrap_Installation_list_unused_refs_with_options(const Napi::Callback
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstalledRef* typed_item = static_cast<FlatpakInstalledRef*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstalledRef* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstalledRef>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -2000,6 +2772,11 @@ Napi::Value Wrap_Installation_load_app_overrides(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'app_id'").ThrowAsJavaScriptException();
@@ -2040,6 +2817,11 @@ Napi::Value Wrap_Installation_modify_remote(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'remote'").ThrowAsJavaScriptException();
     return env.Null();
@@ -2076,6 +2858,11 @@ Napi::Value Wrap_Installation_prune_local_repo(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -2105,6 +2892,11 @@ Napi::Value Wrap_Installation_remove_local_ref_sync(const Napi::CallbackInfo& in
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -2150,6 +2942,11 @@ Napi::Value Wrap_Installation_remove_remote(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'name'").ThrowAsJavaScriptException();
     return env.Null();
@@ -2187,6 +2984,11 @@ Napi::Value Wrap_Installation_run_triggers(const Napi::CallbackInfo& info) {
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -2216,6 +3018,11 @@ Napi::Value Wrap_Installation_set_config_sync(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'key'").ThrowAsJavaScriptException();
@@ -2261,6 +3068,11 @@ Napi::Value Wrap_Installation_set_no_interaction(const Napi::CallbackInfo& info)
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'no_interaction'").ThrowAsJavaScriptException();
     return env.Null();
@@ -2280,6 +3092,11 @@ Napi::Value Wrap_Installation_update_appstream_sync(const Napi::CallbackInfo& in
     return env.Null();
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'remote_name'").ThrowAsJavaScriptException();
@@ -2330,6 +3147,11 @@ Napi::Value Wrap_Installation_update_remote_sync(const Napi::CallbackInfo& info)
   }
   FlatpakInstallation* self = info[0].As<Napi::External<FlatpakInstallation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Installation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'name'").ThrowAsJavaScriptException();
     return env.Null();
@@ -2367,10 +3189,31 @@ Napi::Value Wrap_InstalledRef_get_appdata_content_rating(const Napi::CallbackInf
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GHashTable* result = flatpak_installed_ref_get_appdata_content_rating(self);
 
   // Return GObject of type GLib.HashTable
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_InstalledRef_get_appdata_content_rating_type(const Napi::CallbackInfo& info) {
@@ -2381,6 +3224,11 @@ Napi::Value Wrap_InstalledRef_get_appdata_content_rating_type(const Napi::Callba
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_installed_ref_get_appdata_content_rating_type(self);
 
@@ -2396,6 +3244,11 @@ Napi::Value Wrap_InstalledRef_get_appdata_license(const Napi::CallbackInfo& info
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installed_ref_get_appdata_license(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2409,6 +3262,11 @@ Napi::Value Wrap_InstalledRef_get_appdata_name(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_installed_ref_get_appdata_name(self);
 
@@ -2424,6 +3282,11 @@ Napi::Value Wrap_InstalledRef_get_appdata_summary(const Napi::CallbackInfo& info
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installed_ref_get_appdata_summary(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2437,6 +3300,11 @@ Napi::Value Wrap_InstalledRef_get_appdata_version(const Napi::CallbackInfo& info
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_installed_ref_get_appdata_version(self);
 
@@ -2452,6 +3320,11 @@ Napi::Value Wrap_InstalledRef_get_deploy_dir(const Napi::CallbackInfo& info) {
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installed_ref_get_deploy_dir(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2465,6 +3338,11 @@ Napi::Value Wrap_InstalledRef_get_eol(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_installed_ref_get_eol(self);
 
@@ -2480,6 +3358,11 @@ Napi::Value Wrap_InstalledRef_get_eol_rebase(const Napi::CallbackInfo& info) {
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installed_ref_get_eol_rebase(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2493,6 +3376,11 @@ Napi::Value Wrap_InstalledRef_get_installed_size(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   guint64 result = flatpak_installed_ref_get_installed_size(self);
 
@@ -2508,6 +3396,11 @@ Napi::Value Wrap_InstalledRef_get_is_current(const Napi::CallbackInfo& info) {
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_installed_ref_get_is_current(self);
 
   return Napi::Boolean::New(env, result);
@@ -2521,6 +3414,11 @@ Napi::Value Wrap_InstalledRef_get_latest_commit(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_installed_ref_get_latest_commit(self);
 
@@ -2536,6 +3434,11 @@ Napi::Value Wrap_InstalledRef_get_origin(const Napi::CallbackInfo& info) {
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_installed_ref_get_origin(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2549,6 +3452,11 @@ Napi::Value Wrap_InstalledRef_get_subpaths(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* const* result = flatpak_installed_ref_get_subpaths(self);
 
@@ -2573,6 +3481,11 @@ Napi::Value Wrap_InstalledRef_load_appdata(const Napi::CallbackInfo& info) {
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
     if (!info[1].IsExternal()) {
@@ -2592,7 +3505,23 @@ Napi::Value Wrap_InstalledRef_load_appdata(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_InstalledRef_load_metadata(const Napi::CallbackInfo& info) {
@@ -2603,6 +3532,11 @@ Napi::Value Wrap_InstalledRef_load_metadata(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstalledRef* self = info[0].As<Napi::External<FlatpakInstalledRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid InstalledRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -2623,7 +3557,23 @@ Napi::Value Wrap_InstalledRef_load_metadata(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Instance_get_app(const Napi::CallbackInfo& info) {
@@ -2634,6 +3584,11 @@ Napi::Value Wrap_Instance_get_app(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_instance_get_app(self);
 
@@ -2649,6 +3604,11 @@ Napi::Value Wrap_Instance_get_arch(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_instance_get_arch(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2662,6 +3622,11 @@ Napi::Value Wrap_Instance_get_branch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_instance_get_branch(self);
 
@@ -2677,6 +3642,11 @@ Napi::Value Wrap_Instance_get_child_pid(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   int result = flatpak_instance_get_child_pid(self);
 
   return Napi::Number::New(env, result);
@@ -2690,6 +3660,11 @@ Napi::Value Wrap_Instance_get_commit(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_instance_get_commit(self);
 
@@ -2705,6 +3680,11 @@ Napi::Value Wrap_Instance_get_id(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_instance_get_id(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2719,10 +3699,31 @@ Napi::Value Wrap_Instance_get_info(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GKeyFile* result = flatpak_instance_get_info(self);
 
   // Return GObject of type GLib.KeyFile
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Instance_get_pid(const Napi::CallbackInfo& info) {
@@ -2733,6 +3734,11 @@ Napi::Value Wrap_Instance_get_pid(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   int result = flatpak_instance_get_pid(self);
 
@@ -2748,6 +3754,11 @@ Napi::Value Wrap_Instance_get_runtime(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_instance_get_runtime(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2761,6 +3772,11 @@ Napi::Value Wrap_Instance_get_runtime_commit(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_instance_get_runtime_commit(self);
 
@@ -2776,6 +3792,11 @@ Napi::Value Wrap_Instance_is_running(const Napi::CallbackInfo& info) {
   }
   FlatpakInstance* self = info[0].As<Napi::External<FlatpakInstance>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Instance instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_instance_is_running(self);
 
   return Napi::Boolean::New(env, result);
@@ -2789,6 +3810,11 @@ Napi::Value Wrap_Ref_format_ref(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_ref_format_ref(self);
 
@@ -2806,6 +3832,11 @@ Napi::Value Wrap_Ref_format_ref_cached(const Napi::CallbackInfo& info) {
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_ref_format_ref_cached(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2819,6 +3850,11 @@ Napi::Value Wrap_Ref_get_arch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_ref_get_arch(self);
 
@@ -2834,6 +3870,11 @@ Napi::Value Wrap_Ref_get_branch(const Napi::CallbackInfo& info) {
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_ref_get_branch(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2847,6 +3888,11 @@ Napi::Value Wrap_Ref_get_collection_id(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_ref_get_collection_id(self);
 
@@ -2862,6 +3908,11 @@ Napi::Value Wrap_Ref_get_commit(const Napi::CallbackInfo& info) {
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_ref_get_commit(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2875,6 +3926,11 @@ Napi::Value Wrap_Ref_get_kind(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   FlatpakRefKind result = flatpak_ref_get_kind(self);
 
@@ -2890,6 +3946,11 @@ Napi::Value Wrap_Ref_get_name(const Napi::CallbackInfo& info) {
   }
   FlatpakRef* self = info[0].As<Napi::External<FlatpakRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Ref instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_ref_get_name(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -2903,6 +3964,11 @@ Napi::Value Wrap_RelatedRef_get_subpaths(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRelatedRef* self = info[0].As<Napi::External<FlatpakRelatedRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid RelatedRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* const* result = flatpak_related_ref_get_subpaths(self);
 
@@ -2927,6 +3993,11 @@ Napi::Value Wrap_RelatedRef_should_autoprune(const Napi::CallbackInfo& info) {
   }
   FlatpakRelatedRef* self = info[0].As<Napi::External<FlatpakRelatedRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid RelatedRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_related_ref_should_autoprune(self);
 
   return Napi::Boolean::New(env, result);
@@ -2941,6 +4012,11 @@ Napi::Value Wrap_RelatedRef_should_delete(const Napi::CallbackInfo& info) {
   }
   FlatpakRelatedRef* self = info[0].As<Napi::External<FlatpakRelatedRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid RelatedRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_related_ref_should_delete(self);
 
   return Napi::Boolean::New(env, result);
@@ -2954,6 +4030,11 @@ Napi::Value Wrap_RelatedRef_should_download(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRelatedRef* self = info[0].As<Napi::External<FlatpakRelatedRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid RelatedRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_related_ref_should_download(self);
 
@@ -2973,7 +4054,23 @@ Napi::Value Wrap_Remote_new(const Napi::CallbackInfo& info) {
   FlatpakRemote* result = flatpak_remote_new(name);
 
   // Return GObject of type Remote
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Remote_new_from_file(const Napi::CallbackInfo& info) {
@@ -3002,7 +4099,23 @@ Napi::Value Wrap_Remote_new_from_file(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Remote
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Remote_get_appstream_dir(const Napi::CallbackInfo& info) {
@@ -3013,6 +4126,11 @@ Napi::Value Wrap_Remote_get_appstream_dir(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* arch = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -3027,7 +4145,23 @@ Napi::Value Wrap_Remote_get_appstream_dir(const Napi::CallbackInfo& info) {
   GFile* result = flatpak_remote_get_appstream_dir(self, arch);
 
   // Return GObject of type Gio.File
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Remote_get_appstream_timestamp(const Napi::CallbackInfo& info) {
@@ -3038,6 +4172,11 @@ Napi::Value Wrap_Remote_get_appstream_timestamp(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* arch = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -3052,7 +4191,23 @@ Napi::Value Wrap_Remote_get_appstream_timestamp(const Napi::CallbackInfo& info) 
   GFile* result = flatpak_remote_get_appstream_timestamp(self, arch);
 
   // Return GObject of type Gio.File
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Remote_get_collection_id(const Napi::CallbackInfo& info) {
@@ -3063,6 +4218,11 @@ Napi::Value Wrap_Remote_get_collection_id(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_collection_id(self);
 
@@ -3080,6 +4240,11 @@ Napi::Value Wrap_Remote_get_comment(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   char* result = flatpak_remote_get_comment(self);
 
   Napi::String js_result = Napi::String::New(env, result ? result : "");
@@ -3095,6 +4260,11 @@ Napi::Value Wrap_Remote_get_default_branch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_default_branch(self);
 
@@ -3112,6 +4282,11 @@ Napi::Value Wrap_Remote_get_description(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   char* result = flatpak_remote_get_description(self);
 
   Napi::String js_result = Napi::String::New(env, result ? result : "");
@@ -3128,6 +4303,11 @@ Napi::Value Wrap_Remote_get_disabled(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_remote_get_disabled(self);
 
   return Napi::Boolean::New(env, result);
@@ -3141,6 +4321,11 @@ Napi::Value Wrap_Remote_get_filter(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_filter(self);
 
@@ -3158,6 +4343,11 @@ Napi::Value Wrap_Remote_get_gpg_verify(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_remote_get_gpg_verify(self);
 
   return Napi::Boolean::New(env, result);
@@ -3171,6 +4361,11 @@ Napi::Value Wrap_Remote_get_homepage(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_homepage(self);
 
@@ -3188,6 +4383,11 @@ Napi::Value Wrap_Remote_get_icon(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   char* result = flatpak_remote_get_icon(self);
 
   Napi::String js_result = Napi::String::New(env, result ? result : "");
@@ -3203,6 +4403,11 @@ Napi::Value Wrap_Remote_get_main_ref(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_main_ref(self);
 
@@ -3220,6 +4425,11 @@ Napi::Value Wrap_Remote_get_name(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_remote_get_name(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -3233,6 +4443,11 @@ Napi::Value Wrap_Remote_get_nodeps(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_remote_get_nodeps(self);
 
@@ -3248,6 +4463,11 @@ Napi::Value Wrap_Remote_get_noenumerate(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_remote_get_noenumerate(self);
 
   return Napi::Boolean::New(env, result);
@@ -3261,6 +4481,11 @@ Napi::Value Wrap_Remote_get_prio(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   int result = flatpak_remote_get_prio(self);
 
@@ -3276,6 +4501,11 @@ Napi::Value Wrap_Remote_get_remote_type(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   FlatpakRemoteType result = flatpak_remote_get_remote_type(self);
 
   return Napi::Number::New(env, static_cast<int32_t>(result));
@@ -3289,6 +4519,11 @@ Napi::Value Wrap_Remote_get_title(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_remote_get_title(self);
 
@@ -3306,6 +4541,11 @@ Napi::Value Wrap_Remote_get_url(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   char* result = flatpak_remote_get_url(self);
 
   Napi::String js_result = Napi::String::New(env, result ? result : "");
@@ -3321,6 +4561,11 @@ Napi::Value Wrap_Remote_set_collection_id(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* collection_id = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -3346,6 +4591,11 @@ Napi::Value Wrap_Remote_set_comment(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'comment'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3366,6 +4616,11 @@ Napi::Value Wrap_Remote_set_default_branch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'default_branch'").ThrowAsJavaScriptException();
@@ -3388,6 +4643,11 @@ Napi::Value Wrap_Remote_set_description(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'description'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3409,6 +4669,11 @@ Napi::Value Wrap_Remote_set_disabled(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disabled'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3428,6 +4693,11 @@ Napi::Value Wrap_Remote_set_filter(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'filter_path'").ThrowAsJavaScriptException();
@@ -3450,6 +4720,11 @@ Napi::Value Wrap_Remote_set_gpg_key(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'gpg_key'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3470,6 +4745,11 @@ Napi::Value Wrap_Remote_set_gpg_verify(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'gpg_verify'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3489,6 +4769,11 @@ Napi::Value Wrap_Remote_set_homepage(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'homepage'").ThrowAsJavaScriptException();
@@ -3511,6 +4796,11 @@ Napi::Value Wrap_Remote_set_icon(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'icon'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3531,6 +4821,11 @@ Napi::Value Wrap_Remote_set_main_ref(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'main_ref'").ThrowAsJavaScriptException();
@@ -3553,6 +4848,11 @@ Napi::Value Wrap_Remote_set_nodeps(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'nodeps'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3572,6 +4872,11 @@ Napi::Value Wrap_Remote_set_noenumerate(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'noenumerate'").ThrowAsJavaScriptException();
@@ -3593,6 +4898,11 @@ Napi::Value Wrap_Remote_set_prio(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for parameter 'prio'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3612,6 +4922,11 @@ Napi::Value Wrap_Remote_set_title(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'title'").ThrowAsJavaScriptException();
@@ -3634,6 +4949,11 @@ Napi::Value Wrap_Remote_set_url(const Napi::CallbackInfo& info) {
   }
   FlatpakRemote* self = info[0].As<Napi::External<FlatpakRemote>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Remote instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'url'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3655,6 +4975,11 @@ Napi::Value Wrap_RemoteRef_get_download_size(const Napi::CallbackInfo& info) {
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   guint64 result = flatpak_remote_ref_get_download_size(self);
 
   return Napi::Number::New(env, result);
@@ -3668,6 +4993,11 @@ Napi::Value Wrap_RemoteRef_get_eol(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_remote_ref_get_eol(self);
 
@@ -3683,6 +5013,11 @@ Napi::Value Wrap_RemoteRef_get_eol_rebase(const Napi::CallbackInfo& info) {
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_remote_ref_get_eol_rebase(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -3696,6 +5031,11 @@ Napi::Value Wrap_RemoteRef_get_installed_size(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   guint64 result = flatpak_remote_ref_get_installed_size(self);
 
@@ -3711,10 +5051,31 @@ Napi::Value Wrap_RemoteRef_get_metadata(const Napi::CallbackInfo& info) {
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GBytes* result = flatpak_remote_ref_get_metadata(self);
 
   // Return GObject of type GLib.Bytes
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_RemoteRef_get_remote_name(const Napi::CallbackInfo& info) {
@@ -3725,6 +5086,11 @@ Napi::Value Wrap_RemoteRef_get_remote_name(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakRemoteRef* self = info[0].As<Napi::External<FlatpakRemoteRef>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid RemoteRef instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_remote_ref_get_remote_name(self);
 
@@ -3759,7 +5125,23 @@ Napi::Value Wrap_Transaction_new_for_installation(const Napi::CallbackInfo& info
   }
 
   // Return GObject of type Transaction
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Transaction_abort_webflow(const Napi::CallbackInfo& info) {
@@ -3770,6 +5152,11 @@ Napi::Value Wrap_Transaction_abort_webflow(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for parameter 'id'").ThrowAsJavaScriptException();
@@ -3791,6 +5178,11 @@ Napi::Value Wrap_Transaction_add_default_dependency_sources(const Napi::Callback
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   flatpak_transaction_add_default_dependency_sources(self);
 
   return env.Undefined();
@@ -3804,6 +5196,11 @@ Napi::Value Wrap_Transaction_add_dependency_source(const Napi::CallbackInfo& inf
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'installation'").ThrowAsJavaScriptException();
@@ -3824,6 +5221,11 @@ Napi::Value Wrap_Transaction_add_install_bundle(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'file'").ThrowAsJavaScriptException();
@@ -3861,6 +5263,11 @@ Napi::Value Wrap_Transaction_add_install_flatpakref(const Napi::CallbackInfo& in
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsExternal()) {
     Napi::TypeError::New(env, "Expected external object for parameter 'flatpakref_data'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3888,6 +5295,11 @@ Napi::Value Wrap_Transaction_add_sideload_repo(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'path'").ThrowAsJavaScriptException();
     return env.Null();
@@ -3908,6 +5320,11 @@ Napi::Value Wrap_Transaction_add_uninstall(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'ref'").ThrowAsJavaScriptException();
@@ -3936,6 +5353,11 @@ Napi::Value Wrap_Transaction_complete_basic_auth(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for parameter 'id'").ThrowAsJavaScriptException();
@@ -3977,6 +5399,11 @@ Napi::Value Wrap_Transaction_get_auto_install_debug(const Napi::CallbackInfo& in
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_get_auto_install_debug(self);
 
   return Napi::Boolean::New(env, result);
@@ -3990,6 +5417,11 @@ Napi::Value Wrap_Transaction_get_auto_install_sdk(const Napi::CallbackInfo& info
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_transaction_get_auto_install_sdk(self);
 
@@ -4005,10 +5437,31 @@ Napi::Value Wrap_Transaction_get_current_operation(const Napi::CallbackInfo& inf
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   FlatpakTransactionOperation* result = flatpak_transaction_get_current_operation(self);
 
   // Return GObject of type TransactionOperation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Transaction_get_include_unused_uninstall_ops(const Napi::CallbackInfo& info) {
@@ -4019,6 +5472,11 @@ Napi::Value Wrap_Transaction_get_include_unused_uninstall_ops(const Napi::Callba
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_transaction_get_include_unused_uninstall_ops(self);
 
@@ -4034,10 +5492,31 @@ Napi::Value Wrap_Transaction_get_installation(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   FlatpakInstallation* result = flatpak_transaction_get_installation(self);
 
   // Return GObject of type Installation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Transaction_get_no_deploy(const Napi::CallbackInfo& info) {
@@ -4048,6 +5527,11 @@ Napi::Value Wrap_Transaction_get_no_deploy(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_transaction_get_no_deploy(self);
 
@@ -4063,6 +5547,11 @@ Napi::Value Wrap_Transaction_get_no_interaction(const Napi::CallbackInfo& info) 
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_get_no_interaction(self);
 
   return Napi::Boolean::New(env, result);
@@ -4077,6 +5566,11 @@ Napi::Value Wrap_Transaction_get_no_pull(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_get_no_pull(self);
 
   return Napi::Boolean::New(env, result);
@@ -4090,6 +5584,11 @@ Napi::Value Wrap_Transaction_get_operation_for_ref(const Napi::CallbackInfo& inf
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* remote = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -4118,7 +5617,23 @@ Napi::Value Wrap_Transaction_get_operation_for_ref(const Napi::CallbackInfo& inf
   }
 
   // Return GObject of type TransactionOperation
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Transaction_get_operations(const Napi::CallbackInfo& info) {
@@ -4130,10 +5645,31 @@ Napi::Value Wrap_Transaction_get_operations(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GList* result = flatpak_transaction_get_operations(self);
 
   // Return GObject of type GLib.List
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_Transaction_get_parent_window(const Napi::CallbackInfo& info) {
@@ -4144,6 +5680,11 @@ Napi::Value Wrap_Transaction_get_parent_window(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_transaction_get_parent_window(self);
 
@@ -4159,6 +5700,11 @@ Napi::Value Wrap_Transaction_is_empty(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_is_empty(self);
 
   return Napi::Boolean::New(env, result);
@@ -4172,6 +5718,11 @@ Napi::Value Wrap_Transaction_run(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   GCancellable* cancellable = NULL;
   if (info.Length() > 1 && !info[1].IsNull() && !info[1].IsUndefined()) {
@@ -4203,6 +5754,11 @@ Napi::Value Wrap_Transaction_set_auto_install_debug(const Napi::CallbackInfo& in
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'auto_install_debug'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4223,6 +5779,11 @@ Napi::Value Wrap_Transaction_set_auto_install_sdk(const Napi::CallbackInfo& info
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'auto_install_sdk'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4242,6 +5803,11 @@ Napi::Value Wrap_Transaction_set_default_arch(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'arch'").ThrowAsJavaScriptException();
@@ -4264,6 +5830,11 @@ Napi::Value Wrap_Transaction_set_disable_auto_pin(const Napi::CallbackInfo& info
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disable_pin'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4283,6 +5854,11 @@ Napi::Value Wrap_Transaction_set_disable_dependencies(const Napi::CallbackInfo& 
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disable_dependencies'").ThrowAsJavaScriptException();
@@ -4304,6 +5880,11 @@ Napi::Value Wrap_Transaction_set_disable_prune(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disable_prune'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4323,6 +5904,11 @@ Napi::Value Wrap_Transaction_set_disable_related(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disable_related'").ThrowAsJavaScriptException();
@@ -4344,6 +5930,11 @@ Napi::Value Wrap_Transaction_set_disable_static_deltas(const Napi::CallbackInfo&
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'disable_static_deltas'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4363,6 +5954,11 @@ Napi::Value Wrap_Transaction_set_force_uninstall(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'force_uninstall'").ThrowAsJavaScriptException();
@@ -4384,6 +5980,11 @@ Napi::Value Wrap_Transaction_set_include_unused_uninstall_ops(const Napi::Callba
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'include_unused_uninstall_ops'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4403,6 +6004,11 @@ Napi::Value Wrap_Transaction_set_no_deploy(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'no_deploy'").ThrowAsJavaScriptException();
@@ -4424,6 +6030,11 @@ Napi::Value Wrap_Transaction_set_no_interaction(const Napi::CallbackInfo& info) 
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'no_interaction'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4444,6 +6055,11 @@ Napi::Value Wrap_Transaction_set_no_pull(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'no_pull'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4463,6 +6079,11 @@ Napi::Value Wrap_Transaction_set_parent_window(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsString()) {
     Napi::TypeError::New(env, "Expected string for parameter 'parent_window'").ThrowAsJavaScriptException();
@@ -4485,6 +6106,11 @@ Napi::Value Wrap_Transaction_set_reinstall(const Napi::CallbackInfo& info) {
   }
   FlatpakTransaction* self = info[0].As<Napi::External<FlatpakTransaction>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid Transaction instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   if (info.Length() <= 1 || !info[1].IsBoolean()) {
     Napi::TypeError::New(env, "Expected boolean for parameter 'reinstall'").ThrowAsJavaScriptException();
     return env.Null();
@@ -4505,10 +6131,31 @@ Napi::Value Wrap_TransactionOperation_get_bundle_path(const Napi::CallbackInfo& 
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GFile* result = flatpak_transaction_operation_get_bundle_path(self);
 
   // Return GObject of type Gio.File
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_TransactionOperation_get_commit(const Napi::CallbackInfo& info) {
@@ -4519,6 +6166,11 @@ Napi::Value Wrap_TransactionOperation_get_commit(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_transaction_operation_get_commit(self);
 
@@ -4534,6 +6186,11 @@ Napi::Value Wrap_TransactionOperation_get_download_size(const Napi::CallbackInfo
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   guint64 result = flatpak_transaction_operation_get_download_size(self);
 
   return Napi::Number::New(env, result);
@@ -4547,6 +6204,11 @@ Napi::Value Wrap_TransactionOperation_get_installed_size(const Napi::CallbackInf
     return env.Null();
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   guint64 result = flatpak_transaction_operation_get_installed_size(self);
 
@@ -4562,6 +6224,11 @@ Napi::Value Wrap_TransactionOperation_get_is_skipped(const Napi::CallbackInfo& i
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_operation_get_is_skipped(self);
 
   return Napi::Boolean::New(env, result);
@@ -4576,10 +6243,31 @@ Napi::Value Wrap_TransactionOperation_get_metadata(const Napi::CallbackInfo& inf
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GKeyFile* result = flatpak_transaction_operation_get_metadata(self);
 
   // Return GObject of type GLib.KeyFile
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_TransactionOperation_get_old_metadata(const Napi::CallbackInfo& info) {
@@ -4591,10 +6279,31 @@ Napi::Value Wrap_TransactionOperation_get_old_metadata(const Napi::CallbackInfo&
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GKeyFile* result = flatpak_transaction_operation_get_old_metadata(self);
 
   // Return GObject of type GLib.KeyFile
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_TransactionOperation_get_operation_type(const Napi::CallbackInfo& info) {
@@ -4605,6 +6314,11 @@ Napi::Value Wrap_TransactionOperation_get_operation_type(const Napi::CallbackInf
     return env.Null();
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   FlatpakTransactionOperationType result = flatpak_transaction_operation_get_operation_type(self);
 
@@ -4620,6 +6334,11 @@ Napi::Value Wrap_TransactionOperation_get_ref(const Napi::CallbackInfo& info) {
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   const char* result = flatpak_transaction_operation_get_ref(self);
 
   return Napi::String::New(env, result ? result : "");
@@ -4634,6 +6353,11 @@ Napi::Value Wrap_TransactionOperation_get_related_to_ops(const Napi::CallbackInf
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   GPtrArray* result = flatpak_transaction_operation_get_related_to_ops(self);
 
   // Convert GPtrArray to JavaScript array
@@ -4642,9 +6366,31 @@ Napi::Value Wrap_TransactionOperation_get_related_to_ops(const Napi::CallbackInf
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakTransactionOperation* typed_item = static_cast<FlatpakTransactionOperation*>(item);
-      js_array.Set(i, Napi::External<FlatpakTransactionOperation>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakTransactionOperation>::New(env, typed_item,
+          [](Napi::Env env, FlatpakTransactionOperation* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakTransactionOperation>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
   }
   return js_array;
 }
@@ -4657,6 +6403,11 @@ Napi::Value Wrap_TransactionOperation_get_remote(const Napi::CallbackInfo& info)
     return env.Null();
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* result = flatpak_transaction_operation_get_remote(self);
 
@@ -4672,6 +6423,11 @@ Napi::Value Wrap_TransactionOperation_get_requires_authentication(const Napi::Ca
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   gboolean result = flatpak_transaction_operation_get_requires_authentication(self);
 
   return Napi::Boolean::New(env, result);
@@ -4685,6 +6441,11 @@ Napi::Value Wrap_TransactionOperation_get_subpaths(const Napi::CallbackInfo& inf
     return env.Null();
   }
   FlatpakTransactionOperation* self = info[0].As<Napi::External<FlatpakTransactionOperation>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionOperation instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   const char* const* result = flatpak_transaction_operation_get_subpaths(self);
 
@@ -4709,6 +6470,11 @@ Napi::Value Wrap_TransactionProgress_get_bytes_transferred(const Napi::CallbackI
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   guint64 result = flatpak_transaction_progress_get_bytes_transferred(self);
 
   return Napi::Number::New(env, result);
@@ -4722,6 +6488,11 @@ Napi::Value Wrap_TransactionProgress_get_is_estimating(const Napi::CallbackInfo&
     return env.Null();
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   gboolean result = flatpak_transaction_progress_get_is_estimating(self);
 
@@ -4737,6 +6508,11 @@ Napi::Value Wrap_TransactionProgress_get_progress(const Napi::CallbackInfo& info
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   int result = flatpak_transaction_progress_get_progress(self);
 
   return Napi::Number::New(env, result);
@@ -4751,6 +6527,11 @@ Napi::Value Wrap_TransactionProgress_get_start_time(const Napi::CallbackInfo& in
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
 
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   guint64 result = flatpak_transaction_progress_get_start_time(self);
 
   return Napi::Number::New(env, result);
@@ -4764,6 +6545,11 @@ Napi::Value Wrap_TransactionProgress_get_status(const Napi::CallbackInfo& info) 
     return env.Null();
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   char* result = flatpak_transaction_progress_get_status(self);
 
@@ -4780,6 +6566,11 @@ Napi::Value Wrap_TransactionProgress_set_update_frequency(const Napi::CallbackIn
     return env.Null();
   }
   FlatpakTransactionProgress* self = info[0].As<Napi::External<FlatpakTransactionProgress>>().Data();
+
+  if (!self) {
+    Napi::Error::New(env, "Invalid TransactionProgress instance (null pointer)").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
   if (info.Length() <= 1 || !info[1].IsNumber()) {
     Napi::TypeError::New(env, "Expected number for parameter 'update_interval'").ThrowAsJavaScriptException();
@@ -4811,11 +6602,33 @@ Napi::Value Wrap_flatpak_instance_get_all(const Napi::CallbackInfo& info) {
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstance* typed_item = static_cast<FlatpakInstance*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstance>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstance>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstance* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstance>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 
@@ -4847,7 +6660,23 @@ Napi::Value Wrap_flatpak_ref_parse(const Napi::CallbackInfo& info) {
   }
 
   // Return GObject of type Ref
-  return Napi::External<void>::New(env, result);
+  if (!result) {
+    return env.Null();
+  }
+  // Increment reference count for GObject
+  if (G_IS_OBJECT(result)) {
+    g_object_ref(result);
+    // Create external with finalizer
+    return Napi::External<void>::New(env, result,
+      [](Napi::Env env, void* obj) {
+        if (obj && G_IS_OBJECT(obj)) {
+          g_object_unref(static_cast<GObject*>(obj));
+        }
+      });
+  } else {
+    // Not a GObject, just pass as external
+    return Napi::External<void>::New(env, result);
+  }
 }
 
 Napi::Value Wrap_flatpak_transaction_operation_type_to_string(const Napi::CallbackInfo& info) {
@@ -4916,11 +6745,33 @@ Napi::Value Wrap_flatpak_get_system_installations(const Napi::CallbackInfo& info
     GPtrArray* array = result;
     for (guint i = 0; i < array->len; i++) {
       gpointer item = g_ptr_array_index(array, i);
+      if (!item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
       FlatpakInstallation* typed_item = static_cast<FlatpakInstallation*>(item);
-      js_array.Set(i, Napi::External<FlatpakInstallation>::New(env, typed_item));
+      if (!typed_item) {
+        js_array.Set(i, env.Null());
+        continue;
+      }
+      // Increment reference count for GObject
+      if (G_IS_OBJECT(typed_item)) {
+        g_object_ref(typed_item);
+        // Create external with finalizer
+        js_array.Set(i, Napi::External<FlatpakInstallation>::New(env, typed_item,
+          [](Napi::Env env, FlatpakInstallation* obj) {
+            if (obj && G_IS_OBJECT(obj)) {
+              g_object_unref(obj);
+            }
+          }));
+      } else {
+        // Not a GObject, just pass as external
+        js_array.Set(i, Napi::External<FlatpakInstallation>::New(env, typed_item));
+      }
     }
+    // Unref the array but not the contained objects
+    g_ptr_array_unref(result);
   }
-  g_ptr_array_unref(result);
   return js_array;
 }
 

@@ -1328,7 +1328,7 @@ class CppGenerator:
             return
 
         elif return_value.gir_type == "utf8" or return_value.gir_type == "filename":
-            if return_value.transfer == "full":
+            if return_value.transfer in ["full", "container"]:
                 self.output.append(
                     f'  Napi::String js_result = Napi::String::New(env, {var_name} ? {var_name} : "");'
                 )
@@ -1381,7 +1381,7 @@ class CppGenerator:
             self.output.append(f"      i++;")
             self.output.append(f"    }}")
             self.output.append(f"  }}")
-            if return_value.transfer == "full":
+            if return_value.transfer in ["full", "container"]:
                 self.output.append(f"  g_strfreev({var_name});")
             self.output.append(f"  return js_array;")
 
@@ -1466,7 +1466,7 @@ class CppGenerator:
                 )
             self.output.append(f"    }}")
             self.output.append(f"  }}")
-            if return_value.transfer == "full":
+            if return_value.transfer in ["full", "container"]:
                 self.output.append(f"  g_ptr_array_unref({var_name});")
             self.output.append(f"  return js_array;")
 
@@ -1528,7 +1528,7 @@ class CppGenerator:
             self.output.append(
                 f"  Napi::Buffer<uint8_t> buffer = Napi::Buffer<uint8_t>::Copy(env, static_cast<const uint8_t*>(data), buffer_size);"
             )
-            if return_value.transfer == "full":
+            if return_value.transfer in ["full", "container"]:
                 self.output.append(f"  g_bytes_unref({var_name});")
             self.output.append(f"  return buffer;")
 
@@ -1603,6 +1603,8 @@ class JavaScriptGenerator:
         self.namespace = namespace
         self.output = []
         self.class_names = [cls.name for cls in namespace.classes]
+        # Map class name to Class object for parent lookup
+        self.class_map = {cls.name: cls for cls in namespace.classes}
 
     def generate(self) -> str:
         """Generate JavaScript wrapper code"""
@@ -1651,18 +1653,22 @@ class JavaScriptGenerator:
         self.output.append("  }")
         self.output.append("")
 
+        # Collect all methods from class hierarchy
+        all_methods = self._collect_methods_from_hierarchy(cls)
+        all_static_methods = self._collect_static_methods_from_hierarchy(cls)
+        all_properties = self._collect_properties_from_hierarchy(cls)
+
         # Generate static methods
-        for func in cls.functions:
-            if func.is_static:
-                self.generate_static_method(cls, func)
+        for func in all_static_methods:
+            self.generate_static_method(cls, func)
 
         # Generate instance methods
-        for func in cls.functions:
-            if not func.is_constructor and not func.is_static:
+        for func in all_methods:
+            if not func.is_constructor:
                 self.generate_method(cls, func)
 
         # Generate property getters/setters
-        for prop in cls.properties:
+        for prop in all_properties:
             if prop.readable:
                 self.generate_property_getter(prop)
             if prop.writable:
@@ -1677,6 +1683,74 @@ class JavaScriptGenerator:
 
         # Generate constructor factory
         self.generate_constructor_factory(cls)
+
+    def _collect_methods_from_hierarchy(self, cls: Class) -> list:
+        """Collect all instance methods from class hierarchy"""
+        methods = []
+        seen_names = set()
+
+        # Traverse hierarchy
+        current = cls
+        while current:
+            # Add methods from current class (child overrides parent)
+            for func in current.functions:
+                if not func.is_constructor and not func.is_static:
+                    if func.js_name() not in seen_names:
+                        methods.append(func)
+                        seen_names.add(func.js_name())
+
+            # Move to parent if exists in our generated classes
+            if current.parent and current.parent in self.class_map:
+                current = self.class_map[current.parent]
+            else:
+                break
+
+        return methods
+
+    def _collect_static_methods_from_hierarchy(self, cls: Class) -> list:
+        """Collect all static methods from class hierarchy"""
+        static_methods = []
+        seen_names = set()
+
+        # Traverse hierarchy
+        current = cls
+        while current:
+            # Add static methods from current class
+            for func in current.functions:
+                if func.is_static:
+                    if func.js_name() not in seen_names:
+                        static_methods.append(func)
+                        seen_names.add(func.js_name())
+
+            # Move to parent if exists in our generated classes
+            if current.parent and current.parent in self.class_map:
+                current = self.class_map[current.parent]
+            else:
+                break
+
+        return static_methods
+
+    def _collect_properties_from_hierarchy(self, cls: Class) -> list:
+        """Collect all properties from class hierarchy"""
+        properties = []
+        seen_names = set()
+
+        # Traverse hierarchy
+        current = cls
+        while current:
+            # Add properties from current class
+            for prop in current.properties:
+                if prop.name not in seen_names:
+                    properties.append(prop)
+                    seen_names.add(prop.name)
+
+            # Move to parent if exists in our generated classes
+            if current.parent and current.parent in self.class_map:
+                current = self.class_map[current.parent]
+            else:
+                break
+
+        return properties
 
     def generate_method(self, cls: Class, func: Function):
         """Generate instance method"""
